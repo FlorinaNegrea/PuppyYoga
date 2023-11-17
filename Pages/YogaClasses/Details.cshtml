@@ -1,0 +1,55 @@
+﻿@page
+@model PuppyYoga.Pages.YogaClasses.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>YogaClass</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.ClassName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.ClassName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.DateTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.DateTime)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.Location)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.Location)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.MaxCapacity)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.MaxCapacity)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.Instructor)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.Instructor.InstructorId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.YogaClass?.YogaClassID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

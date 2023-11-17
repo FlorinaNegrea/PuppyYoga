@@ -1,0 +1,48 @@
+﻿@page
+@model PuppyYoga.Pages.Enrollments.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Enrollment[0].EnrollmentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Enrollment[0].User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Enrollment[0].YogaClass)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Enrollment) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnrollmentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.YogaClass.YogaClassID)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.EnrollmentID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.EnrollmentID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.EnrollmentID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

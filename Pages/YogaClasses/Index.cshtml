@@ -1,0 +1,66 @@
+﻿@page "/"
+@model PuppyYoga.Pages.YogaClasses.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.YogaClass[0].ClassName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YogaClass[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YogaClass[0].DateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YogaClass[0].Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YogaClass[0].MaxCapacity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YogaClass[0].Instructor.FullName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.YogaClass) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClassName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxCapacity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Instructor.FullName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.YogaClassID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.YogaClassID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.YogaClassID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
