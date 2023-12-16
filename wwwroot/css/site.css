@@ -72,3 +72,9 @@ a {
         color: #ffffff;
         text-decoration: underline;
     }
+.table-success {
+    background-color: #dff0d8; /* Alegeți o culoare de evidențiere care se potrivește cu tema site-ului */
+}
+.sorted-header {
+    color: #007bff; /* Sau orice altă culoare preferați */
+}

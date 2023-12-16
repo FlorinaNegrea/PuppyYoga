@@ -56,24 +56,15 @@
 {
     <h3>YogaClasses held by Selected Instructor</h3>
     <table class="table">
-        @foreach (var item in Model.InstructorData.Instructors)
-        {
-            string selectedRow = "";
-            if(item.InstructorId == Model.InstructorId)
+        <tbody>
+            @foreach (var classItem in Model.InstructorData.YogaClasses)
             {
-                selectedRow = "table-success";
+                <tr>
+                    <td>
+                        @classItem.ClassName
+                    </td>
+                </tr>
             }
-            <tr class="@selectedRow">
-                <td>
-                    @{
-                        foreach(var y in item.YogaClasses)
-                        {
-                            @y.ClassName
-                            <br />
-                        }
-                    }
-                </td>
-            </tr>
-        }
+        </tbody>
     </table>
 }

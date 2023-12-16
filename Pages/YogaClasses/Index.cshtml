@@ -24,7 +24,8 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Index" asp-route-sortOrder="@Model.ClassNameSort">
+                <a asp-page="./Index" asp-route-sortOrder="@Model.ClassNameSort"
+                   class="sorted-header">
                     @Html.DisplayNameFor(model => model.YogaClass[0].ClassName)
                 </a>
             </th>
@@ -44,8 +45,9 @@
                 @Html.DisplayNameFor(model => model.YogaClass[0].MaxCapacity)
             </th>
             <th>
-                <a asp-page="./Index" asp-route-sortOrder="@Model.InstructorSort">
-                    @Html.DisplayNameFor(modelItem => Model.YogaClass[0].Instructor)
+                <a asp-page="./Index" asp-route-sortOrder="@Model.InstructorSort"
+                   class="sorted-header">
+                    @Html.DisplayNameFor(model => model.YogaClass[0].Instructor.FullName)
                 </a>
             </th>
             <th></th>
