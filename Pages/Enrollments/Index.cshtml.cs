@@ -21,14 +21,31 @@ namespace PuppyYoga.Pages.Enrollments
 
         public IList<Enrollment> Enrollment { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public SessionData EnrollmentD { get; set; }
+        public int EnrollmentID { get; set; }
+        public int SessionId { get; set; }
+
+        public async Task OnGetAsync(int? id, int? sessionId)
         {
-            if (_context.Enrollment != null)
+            EnrollmentD = new SessionData();
+
+
+            EnrollmentD.Enrollments = await _context.Enrollment
+            .Include(y => y.User)
+            .Include(y =>y.YogaClass)
+            .Include(y => y.PuppySessions)
+            .ThenInclude(y => y.Session)
+            .AsNoTracking()
+            .OrderBy(y => y.EnrollmentDate)
+            .ToListAsync();
+            if (id != null)
             {
-                Enrollment = await _context.Enrollment
-                .Include(e => e.User)
-                .Include(e => e.YogaClass).ToListAsync();
+                EnrollmentID = id.Value;
+                Enrollment enrollment = EnrollmentD.Enrollments
+                    .Where(i => i.EnrollmentID == id.Value).Single();
+                EnrollmentD.Sessions = enrollment.PuppySessions.Select(s => s.Session);
             }
+
         }
     }
 }

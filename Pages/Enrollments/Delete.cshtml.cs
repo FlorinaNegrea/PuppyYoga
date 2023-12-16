@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using PuppyYoga.Models;
 
 namespace PuppyYoga.Pages.Enrollments
 {
+    [Authorize(Roles = "Admin")]
     public class DeleteModel : PageModel
     {
         private readonly PuppyYoga.Data.PuppyYogaContext _context;
@@ -29,7 +31,7 @@ namespace PuppyYoga.Pages.Enrollments
                 return NotFound();
             }
 
-            var enrollment = await _context.Enrollment.FirstOrDefaultAsync(m => m.EnrollmentID == id);
+            var enrollment = await _context.Enrollment.Include(b => b.User).Include(b => b.YogaClass).FirstOrDefaultAsync(m => m.EnrollmentID == id);
 
             if (enrollment == null)
             {
@@ -44,20 +46,30 @@ namespace PuppyYoga.Pages.Enrollments
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.Enrollment == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var enrollment = await _context.Enrollment.FindAsync(id);
+
+            var enrollment = await _context.Enrollment
+                .Include(e => e.PuppySessions)
+                .FirstOrDefaultAsync(m => m.EnrollmentID == id);
 
             if (enrollment != null)
             {
-                Enrollment = enrollment;
-                _context.Enrollment.Remove(Enrollment);
+                // Remove related PuppySession records first
+                foreach (var session in enrollment.PuppySessions.ToList())
+                {
+                    _context.PuppySession.Remove(session);
+                }
+
+                // Then remove the Enrollment
+                _context.Enrollment.Remove(enrollment);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
         }
+
     }
 }

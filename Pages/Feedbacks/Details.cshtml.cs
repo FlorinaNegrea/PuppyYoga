@@ -28,7 +28,7 @@ namespace PuppyYoga.Pages.Feedbacks
                 return NotFound();
             }
 
-            var feedback = await _context.Feedback.FirstOrDefaultAsync(m => m.FeedbackId == id);
+            var feedback = await _context.Feedback.Include(b => b.User).Include(b => b.YogaClass).FirstOrDefaultAsync(m => m.FeedbackId == id);
             if (feedback == null)
             {
                 return NotFound();

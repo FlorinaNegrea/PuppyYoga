@@ -38,10 +38,10 @@
                 @Html.DisplayFor(modelItem => item.Comment)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.UserID)
+                @Html.DisplayFor(modelItem => item.User.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.YogaClass.YogaClassID)
+                @Html.DisplayFor(modelItem => item.YogaClass.ClassName)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.FeedbackId">Edit</a> |

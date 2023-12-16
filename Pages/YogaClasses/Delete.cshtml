@@ -37,6 +37,12 @@
             @Html.DisplayFor(model => model.YogaClass.Location)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YogaClass.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YogaClass.Price)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.YogaClass.MaxCapacity)
         </dt>
         <dd class="col-sm-10">
@@ -46,7 +52,7 @@
             @Html.DisplayNameFor(model => model.YogaClass.Instructor)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.YogaClass.Instructor.InstructorId)
+            @Html.DisplayFor(model => model.YogaClass.Instructor.FullName)
         </dd>
     </dl>
     

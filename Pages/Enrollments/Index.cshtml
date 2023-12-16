@@ -22,20 +22,36 @@
             <th>
                 @Html.DisplayNameFor(model => model.Enrollment[0].YogaClass)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Enrollment[0].PuppySessions)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Enrollment) {
-        <tr>
+@foreach (var item in Model.EnrollmentD.Enrollments) {
+            string selectedRow = "";
+            if(item.EnrollmentID == Model.EnrollmentID)
+            {
+                selectedRow = "table-success";
+            }
+            <tr class="@selectedRow">
             <td>
                 @Html.DisplayFor(modelItem => item.EnrollmentDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.UserID)
+                @Html.DisplayFor(modelItem => item.User.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.YogaClass.YogaClassID)
+                @Html.DisplayFor(modelItem => item.YogaClass.ClassName)
+            </td>
+            <td>
+                    @{
+                        foreach (var session in item.PuppySessions)
+                        {
+                            @session.Session.SessionId @: @session.Session.SessionName <br/>
+                        }
+                    }
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.EnrollmentID">Edit</a> |

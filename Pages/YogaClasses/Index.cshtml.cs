@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PuppyYoga.Data;
+using PuppyYoga.Migrations;
 using PuppyYoga.Models;
 
 namespace PuppyYoga.Pages.YogaClasses
@@ -19,14 +20,54 @@ namespace PuppyYoga.Pages.YogaClasses
             _context = context;
         }
 
-        public IList<YogaClass> YogaClass { get;set; } = default!;
+        public IList<YogaClass> YogaClass { get; set; } = default!;
+        public YogaClassData YogaC { get; set; }
+        public string ClassNameSort { get; set; }
+        public string InstructorSort { get; set; }
 
-        public async Task OnGetAsync()
+        public string CurrentFilter { get; set; }
+        public async Task OnGetAsync(string sortOrder, string searchString)
         {
-            
-                YogaClass = await _context.YogaClasses
-                .Include(y => y.Instructor).ToListAsync();
-            
+
+            YogaC = new YogaClassData();
+            ClassNameSort = sortOrder == "classname" ? "classname_desc" : "classname";
+            InstructorSort = sortOrder == "instructor" ? "instructor_desc" : "instructor";
+
+            CurrentFilter = searchString;
+           
+            YogaC.YogaClasses = _context.YogaClasses
+                                          .Include(y => y.Instructor)
+                                          .Include(y => y.PuppySessions)
+                                          .ThenInclude(y => y.Session)
+                                          .AsNoTracking();
+
+           if (!String.IsNullOrEmpty(searchString))
+            {
+                YogaC.YogaClasses = YogaC.YogaClasses.Where( s=> s.Instructor
+                .FirstName.Contains(searchString) || s.Instructor.LastName.Contains(searchString)
+                || s.ClassName.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "classname_desc":
+                    YogaC.YogaClasses = YogaC.YogaClasses.OrderByDescending(s => s.ClassName);
+                    break;
+                case "instructor_desc":
+                    YogaC.YogaClasses = YogaC.YogaClasses.OrderByDescending(s => s.Instructor.FullName);
+                    break;
+                case "instructor":
+                    YogaC.YogaClasses = YogaC.YogaClasses.OrderBy(s => s.Instructor.FullName);
+                    break;
+                default:
+                    YogaC.YogaClasses = YogaC.YogaClasses.OrderBy(s => s.ClassName);
+                    break;
+            }
+
+          
+           
+            YogaClass = YogaC.YogaClasses.ToList();
         }
+
     }
+    
 }

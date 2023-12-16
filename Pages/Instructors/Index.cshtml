@@ -26,8 +26,13 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Instructor) {
-        <tr>
+@foreach (var item in Model.InstructorData.Instructors) {
+            string selectedRow = "";
+            if(item.InstructorId == Model.InstructorId)
+            {
+                selectedRow = "table-success";
+            }
+            <tr class="@selectedRow">
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
@@ -38,6 +43,7 @@
                 @Html.DisplayFor(modelItem => item.Bio)
             </td>
             <td>
+                <a asp-page="./Index" asp-route-id="@item.InstructorId">Select</a> |
                 <a asp-page="./Edit" asp-route-id="@item.InstructorId">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.InstructorId">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.InstructorId">Delete</a>
@@ -46,3 +52,28 @@
 }
     </tbody>
 </table>
+@if (Model.InstructorData.YogaClasses != null)
+{
+    <h3>YogaClasses held by Selected Instructor</h3>
+    <table class="table">
+        @foreach (var item in Model.InstructorData.Instructors)
+        {
+            string selectedRow = "";
+            if(item.InstructorId == Model.InstructorId)
+            {
+                selectedRow = "table-success";
+            }
+            <tr class="@selectedRow">
+                <td>
+                    @{
+                        foreach(var y in item.YogaClasses)
+                        {
+                            @y.ClassName
+                            <br />
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}

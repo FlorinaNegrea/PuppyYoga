@@ -10,7 +10,7 @@ using PuppyYoga.Models;
 
 namespace PuppyYoga.Pages.Enrollments
 {
-    public class CreateModel : PageModel
+    public class CreateModel : PuppySessionsPageModel
     {
         private readonly PuppyYoga.Data.PuppyYogaContext _context;
 
@@ -21,26 +21,41 @@ namespace PuppyYoga.Pages.Enrollments
 
         public IActionResult OnGet()
         {
-        ViewData["UserID"] = new SelectList(_context.User, "UserID", "UserID");
-        ViewData["YogaClassID"] = new SelectList(_context.YogaClasses, "YogaClassID", "YogaClassID");
+        ViewData["UserID"] = new SelectList(_context.User, "UserID", "FullName");
+        ViewData["YogaClassID"] = new SelectList(_context.YogaClasses, "YogaClassID", "ClassName");
+            var enrollment = new Enrollment();
+            enrollment.PuppySessions = new List<PuppySession>();
+            PopulateAssignedSessionData(_context, enrollment);
+            
             return Page();
         }
 
         [BindProperty]
         public Enrollment Enrollment { get; set; } = default!;
-        
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string[] selectedSessions)
         {
-          if (!ModelState.IsValid || _context.Enrollment == null || Enrollment == null)
+            var newEnrollment = new Enrollment();
+            if (selectedSessions != null)
             {
-                return Page();
-            }
+                newEnrollment.PuppySessions = new List<PuppySession>();
+                foreach (var session in selectedSessions)
+                {
+                    var sessionToAdd = new PuppySession
+                    {
+                      
+                        SessionId = int.Parse(session),
+                        YogaClassID = Enrollment.YogaClassID
 
+                    };
+                    newEnrollment.PuppySessions.Add(sessionToAdd);
+                }
+            }
+            Enrollment.PuppySessions = newEnrollment.PuppySessions;
             _context.Enrollment.Add(Enrollment);
             await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
         }
     }

@@ -28,7 +28,7 @@ namespace PuppyYoga.Pages.Enrollments
                 return NotFound();
             }
 
-            var enrollment = await _context.Enrollment.FirstOrDefaultAsync(m => m.EnrollmentID == id);
+            var enrollment = await _context.Enrollment.Include(b=> b.User).Include(b=>b.YogaClass).FirstOrDefaultAsync(m => m.EnrollmentID == id);
             if (enrollment == null)
             {
                 return NotFound();

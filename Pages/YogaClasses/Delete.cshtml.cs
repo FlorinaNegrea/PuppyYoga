@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using PuppyYoga.Models;
 
 namespace PuppyYoga.Pages.YogaClasses
 {
+    [Authorize(Roles = "Admin")]
     public class DeleteModel : PageModel
     {
         private readonly PuppyYoga.Data.PuppyYogaContext _context;
@@ -29,7 +31,7 @@ namespace PuppyYoga.Pages.YogaClasses
                 return NotFound();
             }
 
-            var yogaclass = await _context.YogaClasses.FirstOrDefaultAsync(m => m.YogaClassID == id);
+            var yogaclass = await _context.YogaClasses.Include(b => b.Instructor).FirstOrDefaultAsync(m => m.YogaClassID == id);
 
             if (yogaclass == null)
             {

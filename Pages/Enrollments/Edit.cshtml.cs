@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,7 +12,9 @@ using PuppyYoga.Models;
 
 namespace PuppyYoga.Pages.Enrollments
 {
-    public class EditModel : PageModel
+    [Authorize(Roles = "Admin")]
+
+    public class EditModel : PuppySessionsPageModel
     {
         private readonly PuppyYoga.Data.PuppyYogaContext _context;
 
@@ -30,46 +33,54 @@ namespace PuppyYoga.Pages.Enrollments
                 return NotFound();
             }
 
-            var enrollment =  await _context.Enrollment.FirstOrDefaultAsync(m => m.EnrollmentID == id);
+            var enrollment =  await _context.Enrollment
+                .Include(b => b.User)
+                .Include(b => b.PuppySessions).ThenInclude(b => b.Session)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.EnrollmentID == id);
             if (enrollment == null)
             {
                 return NotFound();
             }
+            PopulateAssignedSessionData(_context, Enrollment);
             Enrollment = enrollment;
-           ViewData["UserID"] = new SelectList(_context.User, "UserID", "UserID");
-           ViewData["YogaClassID"] = new SelectList(_context.YogaClasses, "YogaClassID", "YogaClassID");
+           ViewData["UserID"] = new SelectList(_context.User, "UserID", "FullName");
+           ViewData["YogaClassID"] = new SelectList(_context.YogaClasses, "YogaClassID", "ClassName");
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedSessions)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
-
-            _context.Attach(Enrollment).State = EntityState.Modified;
-
-            try
+            var classToUpdate = await _context.Enrollment
+                .Include(y => y.User)
+                .Include(y => y.PuppySessions).ThenInclude(y => y.Session)
+                .FirstOrDefaultAsync(m => m.YogaClassID == id);
+            if (classToUpdate == null)
             {
+                return NotFound();
+            }
+            if (await TryUpdateModelAsync<Enrollment>(
+
+                classToUpdate,
+                "Enrollment",
+                i => i.EnrollmentDate, i=> i.UserID, i=>i.YogaClassID
+                ))
+            {
+                UpdatePuppySessions(_context, selectedSessions, classToUpdate);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EnrollmentExists(Enrollment.EnrollmentID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
+            UpdatePuppySessions(_context, selectedSessions, classToUpdate);
+            PopulateAssignedSessionData(_context, classToUpdate);
+            return Page();
         }
+
 
         private bool EnrollmentExists(int id)
         {

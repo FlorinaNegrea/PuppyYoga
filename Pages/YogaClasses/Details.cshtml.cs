@@ -28,7 +28,7 @@ namespace PuppyYoga.Pages.YogaClasses
                 return NotFound();
             }
 
-            var yogaclass = await _context.YogaClasses.FirstOrDefaultAsync(m => m.YogaClassID == id);
+            var yogaclass = await _context.YogaClasses.Include(b => b.Instructor).FirstOrDefaultAsync(m => m.YogaClassID == id);
             if (yogaclass == null)
             {
                 return NotFound();

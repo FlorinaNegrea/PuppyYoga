@@ -34,16 +34,19 @@ namespace PuppyYoga.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("UserID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("YogaClassID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("EnrollmentID");
 
                     b.HasIndex("UserID");
 
-                    b.HasIndex("YogaClassID");
+                    b.HasIndex("YogaClassID")
+                        .IsUnique();
 
                     b.ToTable("Enrollment");
                 });
@@ -57,15 +60,18 @@ namespace PuppyYoga.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedbackId"), 1L, 1);
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int?>("Rating")
                         .HasColumnType("int");
 
                     b.Property<int?>("UserId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("YogaClassID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("FeedbackId");
@@ -86,17 +92,68 @@ namespace PuppyYoga.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InstructorId"), 1L, 1);
 
                     b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("InstructorId");
 
                     b.ToTable("Instructors");
+                });
+
+            modelBuilder.Entity("PuppyYoga.Models.PuppySession", b =>
+                {
+                    b.Property<int>("PuppySessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PuppySessionId"), 1L, 1);
+
+                    b.Property<int?>("EnrollmentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("YogaClassID")
+                        .HasColumnType("int");
+
+                    b.HasKey("PuppySessionId");
+
+                    b.HasIndex("EnrollmentID");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("YogaClassID");
+
+                    b.ToTable("PuppySession");
+                });
+
+            modelBuilder.Entity("PuppyYoga.Models.Session", b =>
+                {
+                    b.Property<int>("SessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SessionId"), 1L, 1);
+
+                    b.Property<string>("SessionName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("SessionId");
+
+                    b.ToTable("Session");
                 });
 
             modelBuilder.Entity("PuppyYoga.Models.User", b =>
@@ -108,19 +165,22 @@ namespace PuppyYoga.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"), 1L, 1);
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserID");
 
@@ -136,22 +196,32 @@ namespace PuppyYoga.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("YogaClassID"), 1L, 1);
 
                     b.Property<string>("ClassName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("EnrollmentID")
+                        .HasColumnType("int");
 
                     b.Property<int?>("InstructorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Location")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("MaxCapacity")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("decimal(6,2)");
 
                     b.HasKey("YogaClassID");
 
@@ -163,12 +233,16 @@ namespace PuppyYoga.Migrations
             modelBuilder.Entity("PuppyYoga.Models.Enrollment", b =>
                 {
                     b.HasOne("PuppyYoga.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID");
+                        .WithMany("Enrollments")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PuppyYoga.Models.YogaClass", "YogaClass")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("YogaClassID");
+                        .WithOne("Enrollment")
+                        .HasForeignKey("PuppyYoga.Models.Enrollment", "YogaClassID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
 
@@ -179,13 +253,40 @@ namespace PuppyYoga.Migrations
                 {
                     b.HasOne("PuppyYoga.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PuppyYoga.Models.YogaClass", "YogaClass")
                         .WithMany()
-                        .HasForeignKey("YogaClassID");
+                        .HasForeignKey("YogaClassID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
+
+                    b.Navigation("YogaClass");
+                });
+
+            modelBuilder.Entity("PuppyYoga.Models.PuppySession", b =>
+                {
+                    b.HasOne("PuppyYoga.Models.Enrollment", "Enrollment")
+                        .WithMany("PuppySessions")
+                        .HasForeignKey("EnrollmentID");
+
+                    b.HasOne("PuppyYoga.Models.Session", "Session")
+                        .WithMany("PuppySessions")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PuppyYoga.Models.YogaClass", "YogaClass")
+                        .WithMany("PuppySessions")
+                        .HasForeignKey("YogaClassID");
+
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("Session");
 
                     b.Navigation("YogaClass");
                 });
@@ -194,10 +295,14 @@ namespace PuppyYoga.Migrations
                 {
                     b.HasOne("PuppyYoga.Models.Instructor", "Instructor")
                         .WithMany("YogaClasses")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("InstructorId");
 
                     b.Navigation("Instructor");
+                });
+
+            modelBuilder.Entity("PuppyYoga.Models.Enrollment", b =>
+                {
+                    b.Navigation("PuppySessions");
                 });
 
             modelBuilder.Entity("PuppyYoga.Models.Instructor", b =>
@@ -205,9 +310,21 @@ namespace PuppyYoga.Migrations
                     b.Navigation("YogaClasses");
                 });
 
-            modelBuilder.Entity("PuppyYoga.Models.YogaClass", b =>
+            modelBuilder.Entity("PuppyYoga.Models.Session", b =>
+                {
+                    b.Navigation("PuppySessions");
+                });
+
+            modelBuilder.Entity("PuppyYoga.Models.User", b =>
                 {
                     b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("PuppyYoga.Models.YogaClass", b =>
+                {
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("PuppySessions");
                 });
 #pragma warning restore 612, 618
         }

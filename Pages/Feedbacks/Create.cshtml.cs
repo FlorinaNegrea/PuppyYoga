@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,8 @@ using PuppyYoga.Models;
 
 namespace PuppyYoga.Pages.Feedbacks
 {
+    [Authorize(Roles = "User")]
+
     public class CreateModel : PageModel
     {
         private readonly PuppyYoga.Data.PuppyYogaContext _context;
@@ -21,8 +24,8 @@ namespace PuppyYoga.Pages.Feedbacks
 
         public IActionResult OnGet()
         {
-        ViewData["UserId"] = new SelectList(_context.User, "UserID", "UserID");
-        ViewData["YogaClassID"] = new SelectList(_context.YogaClasses, "YogaClassID", "YogaClassID");
+        ViewData["UserId"] = new SelectList(_context.User, "UserID", "FullName");
+        ViewData["YogaClassID"] = new SelectList(_context.YogaClasses, "YogaClassID", "ClassName");
             return Page();
         }
 

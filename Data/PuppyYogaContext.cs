@@ -32,8 +32,15 @@ namespace PuppyYoga.Data
                 .WithMany(i => i.YogaClasses)
                 .HasForeignKey(y => y.InstructorId) 
                 ;
+            modelBuilder.Entity<YogaClass>()
+            .HasOne(y => y.Enrollment)
+            .WithOne(e => e.YogaClass)
+            .HasForeignKey<Enrollment>(e => e.YogaClassID);
         }
 
+        public DbSet<PuppyYoga.Models.Session>? Session { get; set; }
+
+        public DbSet<PuppySession> PuppySession { get; set; }
 
     }
 }
